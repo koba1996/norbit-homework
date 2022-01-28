@@ -2,8 +2,12 @@ import re
 from decimal import Decimal
 
 def read_from_file(filename):
-    f = open(filename,"r")
-    full_data = f.read()
+    try:
+        f = open(filename,"r")
+        full_data = f.read()
+    except FileNotFoundError:
+        print("Invalid filename provided: ", filename)
+        return []
     data_lines = full_data.split('\n')
     return data_lines[1:]
 
@@ -18,6 +22,8 @@ def format_data(one_line_of_data, time, headers):
 
 def read_data(filename, start_time, frequency, headers):
     data_lines = read_from_file(filename)
+    if data_lines == []:
+        return []
     converted_data = []
     time = start_time
     for data_line in data_lines:
@@ -50,6 +56,8 @@ def format_sonar_data(one_line_of_data, time_diff):
 
 def read_sonar_data(filename, start_time):
     data_lines = read_from_file(filename)
+    if data_lines == []:
+        return []
     time_diff = Decimal(re.split('\t| ', data_lines[0])[0]) - start_time
     converted_data = []
     for data_line in data_lines:
