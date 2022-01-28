@@ -14,6 +14,8 @@ def read_from_file(filename):
 def format_data(one_line_of_data, time, headers):
     formatted_data = {}
     formatted_data["time"] = time
+    if len(one_line_of_data) != len(headers):
+        return {}
     for index, data in enumerate(one_line_of_data):
         formatted_data[headers[index]] = Decimal(data)
     return formatted_data
@@ -26,11 +28,14 @@ def read_data(filename, start_time, frequency, headers):
         return []
     converted_data = []
     time = start_time
-    for data_line in data_lines:
+    for index, data_line in enumerate(data_lines):
         if data_line != "":
             split_data = re.split('\t| ', data_line)
             formatted_data = format_data(split_data, time, headers)
-            converted_data.append(formatted_data)
+            if (formatted_data == {}):
+                print("Invalid or missing data in ", filename, " at line ", index)
+            else:
+                converted_data.append(formatted_data)
             time += Decimal(1/frequency)
     return converted_data
 
@@ -42,13 +47,17 @@ def format_sonar_data(one_line_of_data, time_diff):
     angle_index_pairs = []
     for index in range(1, len(one_line_of_data)):
         if one_line_of_data[index] != "":
-            angle = Decimal(one_line_of_data[index].split(",")[0])
-            sample_index = Decimal(one_line_of_data[index].split(",")[1])
-            angle_index_pair = {
-                "angle": angle,
-                "sample_index": sample_index
-            }
-            angle_index_pairs.append(angle_index_pair)
+            try:
+                angle = Decimal(one_line_of_data[index].split(",")[0])
+                sample_index = Decimal(one_line_of_data[index].split(",")[1])
+            except Exception:
+                print("Invalid data in sonar file: ", one_line_of_data[index])
+            else:
+                angle_index_pair = {
+                    "angle": angle,
+                    "sample_index": sample_index
+                }
+                angle_index_pairs.append(angle_index_pair)
     formatted_data["angle_index_pairs"] = angle_index_pairs
     return formatted_data
 
