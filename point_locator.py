@@ -24,9 +24,11 @@ def get_sonar_data():
     SPEED_OF_SOUND_HEADERS = ["speed"]
     SPEED_OF_SOUND_FILENAME = "speed_of_sound.txt"
 
+    SONAR_FILENAME = "sonar.txt"
+
     gnss_data = data_handler.read_data(GNSS_FILENAME, START_TIME, GNSS_FREQUENCY, GNSS_HEADERS)
     speed_of_sound_data = data_handler.read_data(SPEED_OF_SOUND_FILENAME, START_TIME, SPEED_OF_SOUND_FREQUENCY, SPEED_OF_SOUND_HEADERS)
-    sonar_data = data_handler.read_sonar_data(START_TIME)
+    sonar_data = data_handler.read_sonar_data(SONAR_FILENAME, START_TIME)
     sonar_data = data_handler.extend_sonar_data(sonar_data, gnss_data, GNSS_HEADERS, GNSS_FREQUENCY)
     sonar_data = data_handler.extend_sonar_data(sonar_data, speed_of_sound_data, SPEED_OF_SOUND_HEADERS, SPEED_OF_SOUND_FREQUENCY)
     return sonar_data

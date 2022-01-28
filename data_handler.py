@@ -48,8 +48,7 @@ def format_sonar_data(one_line_of_data, time_diff):
 
 
 
-def read_sonar_data(start_time):
-    filename = "sonar.txt"
+def read_sonar_data(filename, start_time):
     data_lines = read_from_file(filename)
     time_diff = Decimal(re.split('\t| ', data_lines[0])[0]) - start_time
     converted_data = []
