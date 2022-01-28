@@ -137,8 +137,8 @@ def extend_sonar_data(sonar_data, other_data, headers, frequency=0, corrupted_da
     In every other case the nearest value found based on the difference between the time values.
     """
     for sonar_line in sonar_data:
-        if not corrupted_data and frequency != 0:
-            other_data_index = round(sonar_line["time"] * frequency)
+        if not corrupted_data and frequency > 0 and sonar_line["time"] > 0:
+            other_data_index = min(round(sonar_line["time"] * frequency), len(other_data) - 1)
             matching_other_data_line = other_data[other_data_index]
         else:
             matching_other_data_line = min(other_data, key=lambda x: abs(sonar_line["time"] - x["time"]))
