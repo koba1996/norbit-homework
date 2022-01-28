@@ -6,7 +6,7 @@ from pyproj import Proj
 
 def get_sonar_data():
     """
-    A simple function to read and manage the data contained in the text files
+    A simple function to read and manage the data contained in the text files.
     The constants are containing information about the current data format and devices.
     If we change these in the future, we only need to manipulate the constants.
     Returns an array of extended sonar data, each element contains:
@@ -26,11 +26,11 @@ def get_sonar_data():
 
     SONAR_FILENAME = "sonar.txt"
 
-    gnss_data = data_handler.read_data(GNSS_FILENAME, START_TIME, GNSS_FREQUENCY, GNSS_HEADERS)
-    speed_of_sound_data = data_handler.read_data(SPEED_OF_SOUND_FILENAME, START_TIME, SPEED_OF_SOUND_FREQUENCY, SPEED_OF_SOUND_HEADERS)
     sonar_data = data_handler.read_sonar_data(SONAR_FILENAME, START_TIME)
-    sonar_data = data_handler.extend_sonar_data(sonar_data, gnss_data, GNSS_HEADERS, GNSS_FREQUENCY)
-    sonar_data = data_handler.extend_sonar_data(sonar_data, speed_of_sound_data, SPEED_OF_SOUND_HEADERS, SPEED_OF_SOUND_FREQUENCY)
+    gnss_data, lines_skipped = data_handler.read_data(GNSS_FILENAME, START_TIME, GNSS_FREQUENCY, GNSS_HEADERS)
+    sonar_data = data_handler.extend_sonar_data(sonar_data, gnss_data, GNSS_HEADERS, GNSS_FREQUENCY, lines_skipped)
+    speed_of_sound_data, lines_skipped = data_handler.read_data(SPEED_OF_SOUND_FILENAME, START_TIME, SPEED_OF_SOUND_FREQUENCY, SPEED_OF_SOUND_HEADERS)
+    sonar_data = data_handler.extend_sonar_data(sonar_data, speed_of_sound_data, SPEED_OF_SOUND_HEADERS, SPEED_OF_SOUND_FREQUENCY, lines_skipped)
     return sonar_data
 
 
@@ -40,7 +40,7 @@ def calculate_distance(sample_index, speed_of_sound):
     """
     Calculates the distance between the located point and the sonar,
     using the sample frequency, sample index and the speed of sound.
-    Frequency stored in a variable, but later can be changes if a different frequency is used.
+    Frequency stored in a variable, and later can be changed if a different frequency is used.
     """
     SAMPLE_FREQUENCY = 78125
     distance = sample_index / SAMPLE_FREQUENCY * speed_of_sound / 2
@@ -77,6 +77,7 @@ def calculate_altitude_of_point(distance, sample_angle, sonar_altitude):
     """
     Calculates the altitude of the located point
     based on the distance, the cosine of the sample angle and the altitude of the sonar.
+    It ignores the heave correction for now, but later it can be added easily, if necessary.
     """
     altitude_difference = (-1) * distance * Decimal(cos(sample_angle))
     altitude_of_point = sonar_altitude + altitude_difference
@@ -108,10 +109,11 @@ def transform_coordinates(longitude, latitude):
 
 def locate_points(dataline):
     """
-    Find the 3D location of every point in one line of data. Data lines are based on time.
+    Finds the 3D location of every point in one line of data. Data lines are based on time.
     One line of data means all the detected points that can be assigned to the timestamp of the line.
     Returns a dictionary that contains the time (compared to the START_TIME reference point),
     and an array of the points: 3D coordinates and UTM zone for each of them.
+    If this structure is too complex, points can be tuples instead of dictionaries.
     If (for some reason in the future) we need to know the position of the sonar 
     in the moment it detected these points, we can store the position data as well.
     """
