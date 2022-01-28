@@ -1,5 +1,5 @@
 import re
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 def read_from_file(filename):
     try:
@@ -17,7 +17,10 @@ def format_data(one_line_of_data, time, headers):
     if len(one_line_of_data) != len(headers):
         return {}
     for index, data in enumerate(one_line_of_data):
-        formatted_data[headers[index]] = Decimal(data)
+        try:
+            formatted_data[headers[index]] = Decimal(data)
+        except InvalidOperation:
+            return {}
     return formatted_data
 
 
@@ -42,22 +45,24 @@ def read_data(filename, start_time, frequency, headers):
 
 def format_sonar_data(one_line_of_data, time_diff):
     formatted_data = {}
-    timestamp = Decimal(one_line_of_data[0])
-    formatted_data["time"] = timestamp - time_diff
+    try:
+        timestamp = Decimal(one_line_of_data[0])
+        formatted_data["time"] = timestamp - time_diff
+    except InvalidOperation:
+        return {}
     angle_index_pairs = []
     for index in range(1, len(one_line_of_data)):
-        if one_line_of_data[index] != "":
-            try:
-                angle = Decimal(one_line_of_data[index].split(",")[0])
-                sample_index = Decimal(one_line_of_data[index].split(",")[1])
-            except Exception:
-                print("Invalid data in sonar file: ", one_line_of_data[index])
-            else:
-                angle_index_pair = {
-                    "angle": angle,
-                    "sample_index": sample_index
-                }
-                angle_index_pairs.append(angle_index_pair)
+        try:
+            angle = Decimal(one_line_of_data[index].split(",")[0])
+            sample_index = Decimal(one_line_of_data[index].split(",")[1])
+        except (IndexError, InvalidOperation):
+            print("Invalid data in sonar file: ", one_line_of_data[index])
+        else:
+            angle_index_pair = {
+                "angle": angle,
+                "sample_index": sample_index
+            }
+            angle_index_pairs.append(angle_index_pair)
     formatted_data["angle_index_pairs"] = angle_index_pairs
     return formatted_data
 
@@ -67,20 +72,21 @@ def read_sonar_data(filename, start_time):
     data_lines = read_from_file(filename)
     if data_lines == []:
         return []
-    time_diff = Decimal(re.split('\t| ', data_lines[0])[0]) - start_time
+    time_diff = Decimal(re.split('\t| ', data_lines[0])[0]) - Decimal(start_time)
     converted_data = []
-    for data_line in data_lines:
-        if data_line != "":
-            split_data = re.split('\t| ', data_line)
-            formatted_data = format_sonar_data(split_data, time_diff)
-            converted_data.append(formatted_data)
+    for index, data_line in enumerate(data_lines):
+        split_data = re.split('\t| ', data_line)
+        formatted_data = format_sonar_data(split_data, time_diff)
+        if (formatted_data == {}):
+            print("Invalid data in ", filename, " at line ", index)
+        converted_data.append(formatted_data)
     return converted_data
 
 
 def extend_sonar_data(sonar_data, other_data, headers, frequency):
     for sonar_line in sonar_data:
-        gnss_index = round(sonar_line["time"] * frequency)
-        matching_gnss_line = other_data[gnss_index]
+        other_data_index = round(sonar_line["time"] * frequency)
+        matching_other_data_line = other_data[other_data_index]
         for header in headers:
-            sonar_line[header] = matching_gnss_line[header]
+            sonar_line[header] = matching_other_data_line[header]
     return sonar_data
