@@ -3,7 +3,17 @@ import data_handler
 from math import sin, cos, pi
 from pyproj import Proj
 
+
 def get_sonar_data():
+    """
+    A simple function to read and manage the data contained in the text files
+    The constants are containing information about the current data format and devices.
+    If we change these in the future, we only need to manipulate the constants.
+    Returns an array of extended sonar data, each element contains:
+    the time (compared to the START_TIME reference point), an array of angle/sample index pairs,
+    the relevant location and orientation data of that time (roll, pitch, heading, longitude, latitude, altitude, heave),
+    and the speed of sound.
+    """
     START_TIME = 0
 
     GNSS_FREQUENCY = 50
@@ -22,13 +32,25 @@ def get_sonar_data():
     return sonar_data
 
 
+
+
 def calculate_distance(sample_index, speed_of_sound):
+    """
+    Calculates the distance between the located point and the sonar,
+    using the sample frequency, sample index and the speed of sound.
+    Frequency stored in a variable, but later can be changes if a different frequency is used.
+    """
     SAMPLE_FREQUENCY = 78125
     distance = sample_index / SAMPLE_FREQUENCY * speed_of_sound / 2
     return distance
 
 
 def calculate_horizontal_distance(distance, sample_angle, dataline):
+    """
+    Calculates the horizontal distance between the sonar and the located point using trigonatric formula
+    based on four angles (heading, pitch, roll, and the sample angle)
+    and the distance.
+    """
     heading_angle = dataline["heading"]
     pitching_angle = dataline["pitch"]
     rolling_angle = dataline["roll"]
@@ -37,6 +59,11 @@ def calculate_horizontal_distance(distance, sample_angle, dataline):
 
 
 def calculate_vertical_distance(distance, sample_angle, dataline):
+    """
+    Calculates the vertical distance between the sonar and the located point using trigonatric formula
+    based on four angles (heading, pitch, roll, and the sample angle)
+    and the distance.
+    """
     heading_angle = dataline["heading"]
     pitching_angle = dataline["pitch"]
     rolling_angle = dataline["roll"]
@@ -45,24 +72,47 @@ def calculate_vertical_distance(distance, sample_angle, dataline):
 
 
 def calculate_altitude_of_point(distance, sample_angle, sonar_altitude):
+    """
+    Calculates the altitude of the located point
+    based on the distance, the cosine of the sample angle and the altitude of the sonar.
+    """
     altitude_difference = (-1) * distance * Decimal(cos(sample_angle))
     altitude_of_point = sonar_altitude + altitude_difference
     return altitude_of_point
 
 
 def transform_coordinates(longitude, latitude):
-    convert_rate = Decimal(180 / pi)
-    longitude *= convert_rate
-    latitude *= convert_rate
-    zone = int(divmod(longitude, 6)[0]) + 30
+    """
+    Transforms the longitude and latitude angles into UTM coordinates using third party library.
+    The constants are based on conventions, not likely to change in the future.
+    The current coordinates are on the northern hemisphere, but in case of other locations in the future
+    the code can calculate with the southern hemisphere's offset as well.
+    Future idea: should replace this function with a more efficient one, the converting takes a lot of time.
+    """
+    RAD_DEGREE_CONVERT_RATE = Decimal(180 / pi)
+    UTM_OFFSET = 30
+    UTM_ANGLE_DEGREES = 6
+    SOUTHERN_HEMISPHERE_OFFSET = 10000000
+
+    longitude *= RAD_DEGREE_CONVERT_RATE
+    latitude *= RAD_DEGREE_CONVERT_RATE
+    zone = int(divmod(longitude, UTM_ANGLE_DEGREES)[0]) + UTM_OFFSET
     converter = Proj(proj='utm', zone=zone, ellps='WGS84')
     utmx, utmy = converter(longitude, latitude)
     if latitude < 0:
-        utmy= utmy + 10000000
+        utmy= utmy + SOUTHERN_HEMISPHERE_OFFSET
     return [utmx, utmy, zone]
 
 
-def find_located_points(dataline):
+def locate_points(dataline):
+    """
+    Find the 3D location of every point in one line of data. Data lines are based on time.
+    One line of data means all the detected points that can be assigned to the timestamp of the line.
+    Returns a dictionary that contains the time (compared to the START_TIME reference point),
+    and an array of the points: 3D coordinates and UTM zone for each of them.
+    If (for some reason in the future) we need to know the position of the sonar 
+    in the moment it detected these points, we can store the position data as well.
+    """
     located_points = []
     angle_index_pairs = dataline["angle_index_pairs"]
     utm_base_coordinates = transform_coordinates(dataline["longitude"], dataline["latitude"])
@@ -90,13 +140,23 @@ def find_located_points(dataline):
     return data_by_time
 
 
+def get_located_points(data):
+    """
+    Collect all the located points from the extended sonar data, and arrange them into an array of dictionaries.
+    Each dictionary contains a time field, and the array of points that were located in that time.
+    Based on the usage of the points further arrangements are possible, 
+    but this data storing model can be a decent base for many future applications of the data.
+    """
+    all_located_points = []
+    for data_line in data:
+        one_line_of_located_points = locate_points(data_line)
+        all_located_points.append(one_line_of_located_points)
+    return all_located_points
+
 
 def main():
     data = get_sonar_data()
-    located_points = []
-    for data_line in data:
-        located_line = find_located_points(data_line)
-        located_points.append(located_line)
+    located_points = get_located_points(data)
     print(located_points[0])
 
 main()
