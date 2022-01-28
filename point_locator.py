@@ -34,8 +34,6 @@ def get_sonar_data():
     return sonar_data
 
 
-
-
 def calculate_distance(sample_index, speed_of_sound):
     """
     Calculates the distance between the located point and the sonar,
@@ -107,6 +105,22 @@ def transform_coordinates(longitude, latitude):
     return [utmx, utmy, zone]
 
 
+def calculate_coordinates(angle_index_pair, dataline, utm_base_coordinates):
+    """
+    Combines the above calculation methods to evaluate the coordinates of a point.
+    """
+    angle = angle_index_pair["angle"]
+    sample_index = angle_index_pair["sample_index"]
+    distance = calculate_distance(sample_index, dataline["speed"])
+    horizontal_distance = calculate_horizontal_distance(distance, angle, dataline)
+    vertical_distance = calculate_vertical_distance(distance, angle, dataline)
+    utm_x = Decimal(utm_base_coordinates[0]) + horizontal_distance
+    utm_y = Decimal(utm_base_coordinates[1]) + vertical_distance
+    altitude = calculate_altitude_of_point(distance, angle, dataline["altitude"])
+    return utm_x, utm_y, altitude
+
+
+
 def locate_points(dataline):
     """
     Finds the 3D location of every point in one line of data. Data lines are based on time.
@@ -122,14 +136,7 @@ def locate_points(dataline):
     utm_base_coordinates = transform_coordinates(dataline["longitude"], dataline["latitude"])
     print(dataline["time"])
     for angle_index_pair in angle_index_pairs:
-        angle = angle_index_pair["angle"]
-        sample_index = angle_index_pair["sample_index"]
-        distance = calculate_distance(sample_index, dataline["speed"])
-        horizontal_distance = calculate_horizontal_distance(distance, angle, dataline)
-        vertical_distance = calculate_vertical_distance(distance, angle, dataline)
-        utm_x = Decimal(utm_base_coordinates[0]) + horizontal_distance
-        utm_y = Decimal(utm_base_coordinates[1]) + vertical_distance
-        altitude = calculate_altitude_of_point(distance, angle, dataline["altitude"])
+        utm_x, utm_y, altitude = calculate_coordinates(angle_index_pair, dataline, utm_base_coordinates)
         point = {
             "X": utm_x,
             "Y": utm_y,
