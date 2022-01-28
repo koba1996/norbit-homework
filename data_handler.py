@@ -109,25 +109,30 @@ def format_sonar_data(one_line_of_data, time_diff):
         return {}
     angle_index_pairs = []
     for index in range(1, len(one_line_of_data)):
-        try:
-            angle = Decimal(one_line_of_data[index].split(",")[0])
-            sample_index = Decimal(one_line_of_data[index].split(",")[1])
-        except (IndexError, InvalidOperation):
-            print("Invalid data in sonar file: ", one_line_of_data[index])
-        else:
-            angle_index_pair = {
-                "angle": angle,
-                "sample_index": sample_index
-            }
-            angle_index_pairs.append(angle_index_pair)
+        if one_line_of_data[index] != "":
+            try:
+                angle = Decimal(one_line_of_data[index].split(",")[0])
+                sample_index = Decimal(one_line_of_data[index].split(",")[1])
+            except (IndexError, InvalidOperation):
+                print("Invalid data in sonar file: ", one_line_of_data[index])
+            else:
+                angle_index_pair = {
+                    "angle": angle,
+                    "sample_index": sample_index
+                }
+                angle_index_pairs.append(angle_index_pair)
     formatted_data["angle_index_pairs"] = angle_index_pairs
     return formatted_data
 
 
-def extend_sonar_data(sonar_data, other_data, headers, frequency):
+def extend_sonar_data(sonar_data, other_data, headers, frequency, corrupted_data):
     for sonar_line in sonar_data:
-        other_data_index = round(sonar_line["time"] * frequency)
-        matching_other_data_line = other_data[other_data_index]
+        if corrupted_data == False:
+            other_data_index = round(sonar_line["time"] * frequency)
+            matching_other_data_line = other_data[other_data_index]
+        else:
+            reordered_other_data = sorted(other_data, key=lambda x: abs(sonar_line["time"] - x["time"]))
+            matching_other_data_line = reordered_other_data[0]
         for header in headers:
-            sonar_line[header] = matching_other_data_line[header]
+                sonar_line[header] = matching_other_data_line[header]
     return sonar_data
