@@ -259,5 +259,49 @@ class DataHandlerTest(unittest.TestCase):
         self.assertEquals(expected_result, actual_result)
 
 
+    def test_19_extend_sonar_data_lines_skipped_negative_time(self):
+        sonar_data = [{
+            "time": Decimal(-3)
+        }]
+        other_data = [{
+            "time": Decimal(-4),
+            "data": "should connect"
+        }, {
+            "time": Decimal(-1),
+            "data": "should not connect"
+        }]
+        headers = ["data"]
+        frequency = 1
+        lines_skipped = True
+        expected_result = [{
+            "time": Decimal(-3),
+            "data": "should connect"
+        }]
+        actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency, lines_skipped)
+        self.assertEquals(expected_result, actual_result)
+
+
+    def test_20_extend_sonar_data_lines_skipped_small_difference(self):
+        sonar_data = [{
+            "time": Decimal(0)
+        }]
+        other_data = [{
+            "time": Decimal(0.00000001),
+            "data": "should connect"
+        }, {
+            "time": Decimal(0.00000002),
+            "data": "should not connect"
+        }]
+        headers = ["data"]
+        frequency = 1
+        lines_skipped = True
+        expected_result = [{
+            "time": Decimal(0),
+            "data": "should connect"
+        }]
+        actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency, lines_skipped)
+        self.assertEquals(expected_result, actual_result)
+
+
 if __name__ == '__main__':
     unittest.main()
