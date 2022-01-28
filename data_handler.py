@@ -1,5 +1,11 @@
 import re
-from decimal import *
+from decimal import Decimal
+
+def read_from_file(filename):
+    f = open(filename,"r")
+    full_data = f.read()
+    data_lines = full_data.split('\n')
+    return data_lines[1:]
 
 def format_data(one_line_of_data, time, headers):
     formatted_data = {}
@@ -11,10 +17,7 @@ def format_data(one_line_of_data, time, headers):
 
 
 def read_data(filename, start_time, frequency, headers):
-    f = open(filename,"r")
-    full_data = f.read()
-    data_lines = full_data.split('\n')
-    data_lines = data_lines[1:]
+    data_lines = read_from_file(filename)
     converted_data = []
     time = start_time
     for data_line in data_lines:
@@ -47,10 +50,7 @@ def format_sonar_data(one_line_of_data, time_diff):
 
 def read_sonar_data(start_time):
     filename = "sonar.txt"
-    f = open(filename,"r")
-    full_data = f.read()
-    data_lines = full_data.split('\n')
-    data_lines = data_lines[1:]
+    data_lines = read_from_file(filename)
     time_diff = Decimal(re.split('\t| ', data_lines[0])[0]) - start_time
     converted_data = []
     for data_line in data_lines:
