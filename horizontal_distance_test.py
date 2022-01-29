@@ -10,6 +10,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def setup_move_tests(self, sample_angle, heading_angle, attribute_to_change, change_by):
         """
         Creates the test scenario based on the parameters.
+        Based on the usage validation in the tested function for angles greater than 90 degrees might be necessery.
         Future idea: create a code like this where all parameters can be customized to simulate more complex scenarios.
         """
         distance = Decimal(5)
@@ -33,7 +34,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_0_calculate_horizontal_distance(self):
         """
         Positive sample angle, no pitch and roll, heading north.
-        Heading decreasing: we expect the horizontal distance to increase.
+        Heading is decreasing: we expect the horizontal distance to increase.
         """
         first_distance, second_distance = self.setup_move_tests(1, 0, "heading", -0.1)
         self.assertLess(first_distance, second_distance)
@@ -42,7 +43,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_1_calculate_horizontal_distance(self):
         """
         Positive sample angle, no pitch and roll, heading north.
-        Heading inreasing: we expect the horizontal distance to increase.
+        Heading is increasing: we expect the horizontal distance to increase.
         """
         first_distance, second_distance = self.setup_move_tests(1, 0, "heading", 0.1)
         self.assertLess(first_distance, second_distance)
@@ -51,7 +52,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_2_calculate_horizontal_distance(self):
         """
         Negative sample angle, no pitch and roll, heading north.
-        Heading decreasing: we expect the horizontal distance to decrease.
+        Heading is decreasing: we expect the horizontal distance to decrease.
         """
         first_distance, second_distance = self.setup_move_tests(-1, 0, "heading", -0.1)
         self.assertGreater(first_distance, second_distance)
@@ -60,7 +61,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_3_calculate_horizontal_distance(self):
         """
         Negative sample angle, no pitch and roll, heading north.
-        Heading inreases: we expect the horizontal distance to decrease.
+        Heading is increasing: we expect the horizontal distance to decrease.
         """
         first_distance, second_distance = self.setup_move_tests(-1, 0, "heading", 0.1)
         self.assertGreater(first_distance, second_distance)
@@ -69,7 +70,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_4_calculate_horizontal_distance(self):
         """
         Positive sample angle, no roll, heading north.
-        Pitching decreasing: we expect no changes horizontally.
+        Pitching is decreasing: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(1, 0, "pitch", -0.1)
         self.assertEqual(first_distance, second_distance)
@@ -78,7 +79,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_5_calculate_horizontal_distance(self):
         """
         Positive sample angle, no roll, heading north.
-        Pitching increasing: we expect no changes horizontally.
+        Pitching is increasing: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(1, 0, "pitch", 0.1)
         self.assertEqual(first_distance, second_distance)
@@ -87,7 +88,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_6_calculate_horizontal_distance(self):
         """
         Negative sample angle, no roll, heading north.
-        Pitching decreasing: we expect no changes horizontally.
+        Pitching is decreasing: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(-1, 0, "pitch", -0.1)
         self.assertEqual(first_distance, second_distance)
@@ -96,7 +97,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_7_calculate_horizontal_distance(self):
         """
         Negative sample angle, no roll, heading north.
-        Pitching increasing: we expect no changes horizontally.
+        Pitching is increasing: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(-1, 0, "pitch", 0.1)
         self.assertEqual(first_distance, second_distance)
@@ -105,7 +106,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_8_calculate_horizontal_distance(self):
         """
         Positive sample angle, no pitch, heading north.
-        Rolling decreasing: we expect horizontal distance to increase.
+        Rolling is decreasing: we expect horizontal distance to increase.
         """
         first_distance, second_distance = self.setup_move_tests(1, 0, "roll", -0.1)
         self.assertLess(first_distance, second_distance)
@@ -114,7 +115,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_9_calculate_horizontal_distance(self):
         """
         Positive sample angle, no pitch, heading north.
-        Rolling increasing: we expect horizontal distance to decrease.
+        Rolling is increasing: we expect horizontal distance to decrease.
         """
         first_distance, second_distance = self.setup_move_tests(1, 0, "roll", 0.1)
         self.assertGreater(first_distance, second_distance)
@@ -123,7 +124,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_10_calculate_horizontal_distance(self):
         """
         Negative sample angle, no pitch, heading north.
-        Rolling decreasing: we expect horizontal distance to increase.
+        Rolling is decreasing: we expect horizontal distance to increase.
         """
         first_distance, second_distance = self.setup_move_tests(-1, 0, "roll", -0.1)
         self.assertLess(first_distance, second_distance)
@@ -132,7 +133,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_11_calculate_horizontal_distance(self):
         """
         Negative sample angle, no pitch, heading north.
-        Rolling increasing: we expect horizontal distance to decrease.
+        Rolling is increasing: we expect horizontal distance to decrease.
         """
         first_distance, second_distance = self.setup_move_tests(-1, 0, "roll", 0.1)
         self.assertGreater(first_distance, second_distance)
@@ -141,7 +142,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_12_calculate_horizontal_distance(self):
         """
         Positive sample angle, no pitch and roll, heading east.
-        Heading decreasing: we expect the horizontal distance to decrease.
+        Heading is decreasing: we expect the horizontal distance to decrease.
         """
         first_distance, second_distance = self.setup_move_tests(1, pi / 2, "heading", -0.1)
         self.assertGreater(first_distance, second_distance)
@@ -150,7 +151,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_13_calculate_horizontal_distance(self):
         """
         Positive sample angle, no pitch and roll, heading east.
-        Heading inreases: we expect the horizontal distance to increase.
+        Heading is increasing: we expect the horizontal distance to increase.
         """
         first_distance, second_distance = self.setup_move_tests(1, pi / 2, "heading", 0.1)
         self.assertLess(first_distance, second_distance)
@@ -159,7 +160,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_14_calculate_horizontal_distance(self):
         """
         Negative sample angle, no pitch and roll, heading east.
-        Heading decreasing: we expect the horizontal distance to increase.
+        Heading is decreasing: we expect the horizontal distance to increase.
         """
         first_distance, second_distance = self.setup_move_tests(-1, pi / 2, "heading", -0.1)
         self.assertLess(first_distance, second_distance)
@@ -168,7 +169,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_15_calculate_horizontal_distance(self):
         """
         Negative sample angle, no pitch and roll, heading east.
-        Heading inreases: we expect the horizontal distance to decrease.
+        Heading is increasing: we expect the horizontal distance to decrease.
         """
         first_distance, second_distance = self.setup_move_tests(-1, pi / 2, "heading", 0.1)
         self.assertGreater(first_distance, second_distance)
@@ -177,7 +178,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_16_calculate_horizontal_distance(self):
         """
         Positive sample angle, no roll, heading east.
-        Pitching decreasing: we expect the horizontal distance to decrease.
+        Pitching is decreasing: we expect the horizontal distance to decrease.
         """
         first_distance, second_distance = self.setup_move_tests(1, pi / 2, "pitch", -0.1)
         self.assertGreater(first_distance, second_distance)
@@ -185,8 +186,8 @@ class HorizontalDistanceTest(unittest.TestCase):
 
     def test_17_calculate_horizontal_distance(self):
         """
-        Positive sample angle, no roll, heading north.
-        Pitching increasing: we expect the horizontal distance to increase.
+        Positive sample angle, no roll, heading east.
+        Pitching is increasing: we expect the horizontal distance to increase.
         """
         first_distance, second_distance = self.setup_move_tests(1, pi / 2, "pitch", 0.1)
         self.assertLess(first_distance, second_distance)
@@ -194,8 +195,8 @@ class HorizontalDistanceTest(unittest.TestCase):
 
     def test_18_calculate_horizontal_distance(self):
         """
-        Negative sample angle, no roll, heading north.
-        Pitching decreasing: we expect the horizontal distance to decrease.
+        Negative sample angle, no roll, heading east.
+        Pitching is decreasing: we expect the horizontal distance to decrease.
         """
         first_distance, second_distance = self.setup_move_tests(-1, pi / 2, "pitch", -0.1)
         self.assertGreater(first_distance, second_distance)
@@ -203,8 +204,8 @@ class HorizontalDistanceTest(unittest.TestCase):
 
     def test_19_calculate_horizontal_distance(self):
         """
-        Negative sample angle, no roll, heading north.
-        Pitching increasing: we expect the horizontal distance to increase.
+        Negative sample angle, no roll, heading east.
+        Pitching is increasing: we expect the horizontal distance to increase.
         """
         first_distance, second_distance = self.setup_move_tests(-1, pi / 2, "pitch", 0.1)
         self.assertLess(first_distance, second_distance)
@@ -213,7 +214,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_20_calculate_horizontal_distance(self):
         """
         Positive sample angle, no pitch, heading east.
-        Rolling decreasing: we expect no changes horizontally.
+        Rolling is decreasing: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(1, pi / 2, "roll", -0.1)
         self.assertAlmostEqual(first_distance, second_distance, 12)
@@ -222,7 +223,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_21_calculate_horizontal_distance(self):
         """
         Positive sample angle, no pitch, heading east.
-        Rolling increasing: we expect no changes horizontally.
+        Rolling is increasing: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(1, pi / 2, "roll", 0.1)
         self.assertAlmostEqual(first_distance, second_distance, 12)
@@ -231,7 +232,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_22_calculate_horizontal_distance(self):
         """
         Negative sample angle, no pitch, heading east.
-        Rolling decreasing: we expect no changes horizontally.
+        Rolling is decreasing: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(-1, pi / 2, "roll", -0.1)
         self.assertAlmostEqual(first_distance, second_distance, 12)
@@ -240,7 +241,7 @@ class HorizontalDistanceTest(unittest.TestCase):
     def test_23_calculate_horizontal_distance(self):
         """
         Negative sample angle, no pitch, heading east.
-        Rolling increasing: we expect no changes horizontally.
+        Rolling is increasing: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(-1, pi / 2, "roll", 0.1)
         self.assertAlmostEqual(first_distance, second_distance, 12)
