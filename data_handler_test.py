@@ -8,7 +8,7 @@ class DataHandlerTest(unittest.TestCase):
         invalid_filename = "file-not-exists.txt"
         expected_outcome = []
         actual_result = data_handler.read_from_file(invalid_filename)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
     
     def test_1_read_sonar_data_not_exists(self):
@@ -16,7 +16,7 @@ class DataHandlerTest(unittest.TestCase):
         start_time = 0
         expected_outcome = []
         actual_result = data_handler.read_sonar_data(invalid_filename, start_time)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
     
     def test_2_read_regular_data_not_exists(self):
@@ -26,7 +26,7 @@ class DataHandlerTest(unittest.TestCase):
         headers = []
         expected_outcome = []
         actual_result, invalid_data = data_handler.read_data(invalid_filename, start_time, frequency, headers)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_3_read_regular_data_not_exists(self):
@@ -36,7 +36,7 @@ class DataHandlerTest(unittest.TestCase):
         headers = []
         expected_outcome = True
         data, actual_result = data_handler.read_data(invalid_filename, start_time, frequency, headers)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_4_format_regular_data_missing_header(self):
@@ -45,7 +45,7 @@ class DataHandlerTest(unittest.TestCase):
         headers = ["first_header", "second_header"]
         expected_outcome = {}
         actual_result = data_handler.format_data(one_line_of_data, time, headers)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_5_format_regular_data_missing_data(self):
@@ -54,7 +54,7 @@ class DataHandlerTest(unittest.TestCase):
         headers = ["first_header", "second_header", "third_header"]
         expected_outcome = {}
         actual_result = data_handler.format_data(one_line_of_data, time, headers)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_6_format_regular_data_invalid_data(self):
@@ -63,7 +63,7 @@ class DataHandlerTest(unittest.TestCase):
         headers = ["header"]
         expected_outcome = {}
         actual_result = data_handler.format_data(one_line_of_data, time, headers)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_7_format_regular_data_valid_data(self):
@@ -75,7 +75,7 @@ class DataHandlerTest(unittest.TestCase):
             "header": Decimal(1)
         }
         actual_result = data_handler.format_data(one_line_of_data, time, headers)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_8_format_sonar_data_invalid_timestamp(self):
@@ -83,7 +83,7 @@ class DataHandlerTest(unittest.TestCase):
         time_diff = 0
         expected_outcome = {}
         actual_result = data_handler.format_sonar_data(one_line_of_data, time_diff)
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_9_format_sonar_data_valid_timestamp(self):
@@ -91,7 +91,7 @@ class DataHandlerTest(unittest.TestCase):
         time_diff = 0
         expected_outcome = Decimal(1)
         actual_result = data_handler.format_sonar_data(one_line_of_data, time_diff)["time"]
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_10_format_sonar_data_invalid_first_data(self):
@@ -102,7 +102,7 @@ class DataHandlerTest(unittest.TestCase):
             "sample_index": Decimal(2) 
         }]
         actual_result = data_handler.format_sonar_data(one_line_of_data, time_diff)["angle_index_pairs"]
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_11_format_sonar_data_missing_separator(self):
@@ -113,7 +113,7 @@ class DataHandlerTest(unittest.TestCase):
             "sample_index": Decimal(2) 
         }]
         actual_result = data_handler.format_sonar_data(one_line_of_data, time_diff)["angle_index_pairs"]
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_12_format_sonar_data_valid_data(self):
@@ -128,7 +128,7 @@ class DataHandlerTest(unittest.TestCase):
             "sample_index": Decimal(2) 
         }]
         actual_result = data_handler.format_sonar_data(one_line_of_data, time_diff)["angle_index_pairs"]
-        self.assertEquals(expected_outcome, actual_result)
+        self.assertEqual(expected_outcome, actual_result)
 
 
     def test_13_extend_sonar_data_no_lines_skipped(self):
@@ -149,7 +149,7 @@ class DataHandlerTest(unittest.TestCase):
             "data": "should connect"
         }]
         actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency)
-        self.assertEquals(expected_result, actual_result)
+        self.assertEqual(expected_result, actual_result)
 
 
     def test_14_extend_sonar_data_no_lines_skipped_large_time_number(self):
@@ -170,7 +170,7 @@ class DataHandlerTest(unittest.TestCase):
             "data": "should connect"
         }]
         actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency)
-        self.assertEquals(expected_result, actual_result)
+        self.assertEqual(expected_result, actual_result)
 
 
     def test_15_extend_sonar_data_no_lines_skipped_zero_frequency(self):
@@ -191,7 +191,7 @@ class DataHandlerTest(unittest.TestCase):
             "data": "should connect"
         }]
         actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency)
-        self.assertEquals(expected_result, actual_result)
+        self.assertEqual(expected_result, actual_result)
 
 
     def test_16_extend_sonar_data_no_lines_skipped_negative_frequency(self):
@@ -212,7 +212,7 @@ class DataHandlerTest(unittest.TestCase):
             "data": "should connect"
         }]
         actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency)
-        self.assertEquals(expected_result, actual_result)
+        self.assertEqual(expected_result, actual_result)
 
 
     def test_17_extend_sonar_data_no_lines_skipped_negative_time(self):
@@ -234,7 +234,7 @@ class DataHandlerTest(unittest.TestCase):
             "data": "should connect"
         }]
         actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency)
-        self.assertEquals(expected_result, actual_result)
+        self.assertEqual(expected_result, actual_result)
 
 
     def test_18_extend_sonar_data_lines_skipped(self):
@@ -256,7 +256,7 @@ class DataHandlerTest(unittest.TestCase):
             "data": "should connect"
         }]
         actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency, lines_skipped)
-        self.assertEquals(expected_result, actual_result)
+        self.assertEqual(expected_result, actual_result)
 
 
     def test_19_extend_sonar_data_lines_skipped_negative_time(self):
@@ -278,7 +278,7 @@ class DataHandlerTest(unittest.TestCase):
             "data": "should connect"
         }]
         actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency, lines_skipped)
-        self.assertEquals(expected_result, actual_result)
+        self.assertEqual(expected_result, actual_result)
 
 
     def test_20_extend_sonar_data_lines_skipped_small_difference(self):
@@ -300,7 +300,7 @@ class DataHandlerTest(unittest.TestCase):
             "data": "should connect"
         }]
         actual_result = data_handler.extend_sonar_data(sonar_data, other_data, headers, frequency, lines_skipped)
-        self.assertEquals(expected_result, actual_result)
+        self.assertEqual(expected_result, actual_result)
 
 
 if __name__ == '__main__':
