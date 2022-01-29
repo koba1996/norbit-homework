@@ -216,7 +216,7 @@ class HorizontalDistanceTest(unittest.TestCase):
         Rolling decreases: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(1, pi / 2, "roll", -0.1)
-        self.assertAlmostEqual(first_distance, second_distance)
+        self.assertAlmostEqual(first_distance, second_distance, 12)
 
 
     def test_21_calculate_horizontal_distance(self):
@@ -225,7 +225,7 @@ class HorizontalDistanceTest(unittest.TestCase):
         Rolling increases: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(1, pi / 2, "roll", 0.1)
-        self.assertAlmostEqual(first_distance, second_distance)
+        self.assertAlmostEqual(first_distance, second_distance, 12)
 
 
     def test_22_calculate_horizontal_distance(self):
@@ -234,7 +234,7 @@ class HorizontalDistanceTest(unittest.TestCase):
         Rolling decreases: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(-1, pi / 2, "roll", -0.1)
-        self.assertAlmostEqual(first_distance, second_distance)
+        self.assertAlmostEqual(first_distance, second_distance, 12)
 
 
     def test_23_calculate_horizontal_distance(self):
@@ -243,7 +243,7 @@ class HorizontalDistanceTest(unittest.TestCase):
         Rolling increases: we expect no changes horizontally.
         """
         first_distance, second_distance = self.setup_move_tests(-1, pi / 2, "roll", 0.1)
-        self.assertAlmostEqual(first_distance, second_distance)
+        self.assertAlmostEqual(first_distance, second_distance, 12)
 
 
 if __name__ == '__main__':
