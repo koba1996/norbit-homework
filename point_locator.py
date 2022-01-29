@@ -1,6 +1,4 @@
-from ast import Raise
-from decimal import Decimal, InvalidOperation
-from tokenize import Number
+from decimal import Decimal
 import data_handler
 from math import sin, cos, pi
 from pyproj import Proj
@@ -28,6 +26,7 @@ def get_sonar_data():
 
     SONAR_FILENAME = "sonar.txt"
 
+    print("Collecting data...")
     sonar_data = data_handler.read_sonar_data(SONAR_FILENAME, START_TIME)
     gnss_data, lines_skipped = data_handler.read_data(GNSS_FILENAME, START_TIME, GNSS_FREQUENCY, GNSS_HEADERS)
     sonar_data = data_handler.extend_sonar_data(sonar_data, gnss_data, GNSS_HEADERS, GNSS_FREQUENCY, lines_skipped)
@@ -36,7 +35,7 @@ def get_sonar_data():
     return sonar_data
 
 
-def calculate_distance(sample_index, speed_of_sound):
+def calculate_distance(sample_index: Decimal, speed_of_sound: Decimal):
     """
     Calculates the distance between the located point and the sonar,
     using the sample frequency, sample index and the speed of sound.
@@ -51,7 +50,7 @@ def calculate_distance(sample_index, speed_of_sound):
     return distance
 
 
-def calculate_horizontal_distance(distance, sample_angle, dataline):
+def calculate_horizontal_distance(distance: Decimal, sample_angle: Decimal, dataline):
     """
     Calculates the horizontal distance between the sonar and the located point using trigonatric formula
     based on four angles (heading, pitch, roll, and the sample angle)
@@ -64,7 +63,7 @@ def calculate_horizontal_distance(distance, sample_angle, dataline):
     return horizontal_distance
 
 
-def calculate_vertical_distance(distance, sample_angle, dataline):
+def calculate_vertical_distance(distance: Decimal, sample_angle: Decimal, dataline):
     """
     Calculates the vertical distance between the sonar and the located point using trigonatric formula
     based on four angles (heading, pitch, roll, and the sample angle)
@@ -77,7 +76,7 @@ def calculate_vertical_distance(distance, sample_angle, dataline):
     return vertical_distance
 
 
-def calculate_altitude_of_point(distance, sample_angle, sonar_altitude):
+def calculate_altitude_of_point(distance: Decimal, sample_angle: Decimal, sonar_altitude: Decimal):
     """
     Calculates the altitude of the located point
     based on the distance, the cosine of the sample angle and the altitude of the sonar.
@@ -88,7 +87,7 @@ def calculate_altitude_of_point(distance, sample_angle, sonar_altitude):
     return altitude_of_point
 
 
-def transform_coordinates(longitude, latitude):
+def transform_coordinates(longitude: Decimal, latitude: Decimal):
     """
     Transforms the longitude and latitude angles into UTM coordinates using third party library.
     The constants are based on conventions, not likely to change in the future.
@@ -97,7 +96,7 @@ def transform_coordinates(longitude, latitude):
     Future idea: should replace this function with a more efficient one, the converting takes a lot of time.
     """
     RAD_DEGREE_CONVERT_RATE = Decimal(180 / pi)
-    UTM_OFFSET = 30
+    UTM_OFFSET = 31
     UTM_ANGLE_DEGREES = 6
     SOUTHERN_HEMISPHERE_OFFSET = 10000000
 
@@ -140,7 +139,6 @@ def locate_points(dataline):
     located_points = []
     angle_index_pairs = dataline["angle_index_pairs"]
     utm_base_coordinates = transform_coordinates(dataline["longitude"], dataline["latitude"])
-    print(dataline["time"])
     for angle_index_pair in angle_index_pairs:
         utm_x, utm_y, altitude = calculate_coordinates(angle_index_pair, dataline, utm_base_coordinates)
         point = {
@@ -164,6 +162,7 @@ def get_located_points(data):
     Based on the usage of the points further arrangements are possible, 
     but this data storing model can be a decent base for many future applications of the data.
     """
+    print("Calculating coordinates, this might take around half a minute")
     all_located_points = []
     for data_line in data:
         one_line_of_located_points = locate_points(data_line)
@@ -173,8 +172,8 @@ def get_located_points(data):
 
 def main():
     data = get_sonar_data()
-    #located_points = get_located_points(data)
-    #print(located_points[0])
+    located_points = get_located_points(data)
+    print("Finished")
 
 if __name__ == '__main__':
     main()
