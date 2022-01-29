@@ -7,20 +7,20 @@ from math import pi
 class HorizontalDistanceTest(unittest.TestCase):
 
 
-    def setup_move_tests(self, sample_angle, heading, attribute_to_change, change_by):
+    def setup_move_tests(self, sample_angle, heading_angle, attribute_to_change, change_by):
         """
-        Negative sample angle, no pitch and roll, heading north.
-        Heading decreases: we expect the horizontal distance to decrease.
+        Creates the test scenario based on the parameters.
+        Future idea: create a code like this where all parameters can be customized to simulate more complex scenarios.
         """
         distance = Decimal(5)
         angle = Decimal(sample_angle)
         first_data = {
-            "heading": Decimal(heading),
+            "heading": Decimal(heading_angle),
             "pitch": Decimal(0),
             "roll": Decimal(0)
         }
         second_data = {
-            "heading": Decimal(heading),
+            "heading": Decimal(heading_angle),
             "pitch": Decimal(0),
             "roll": Decimal(0)
         }
