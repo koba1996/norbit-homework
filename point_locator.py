@@ -1,4 +1,6 @@
-from decimal import Decimal
+from ast import Raise
+from decimal import Decimal, InvalidOperation
+from tokenize import Number
 import data_handler
 from math import sin, cos, pi
 from pyproj import Proj
@@ -39,7 +41,11 @@ def calculate_distance(sample_index, speed_of_sound):
     Calculates the distance between the located point and the sonar,
     using the sample frequency, sample index and the speed of sound.
     Frequency stored in a variable, and later can be changed if a different frequency is used.
+    In case of negative sample index or speed an exception is raised. Future idea: depending on the usage of the data 
+    this could be handled by a default value instead of an exception.
     """
+    if not (sample_index > 0 and speed_of_sound > 0):
+        raise ValueError('Cannot calculate distance, invalid data: ', sample_index, ', ', speed_of_sound)
     SAMPLE_FREQUENCY = 78125
     distance = sample_index / SAMPLE_FREQUENCY * speed_of_sound / 2
     return distance
@@ -167,7 +173,8 @@ def get_located_points(data):
 
 def main():
     data = get_sonar_data()
-    located_points = get_located_points(data)
-    print(located_points[0])
+    #located_points = get_located_points(data)
+    #print(located_points[0])
 
-main()
+if __name__ == '__main__':
+    main()
