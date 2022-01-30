@@ -4,6 +4,9 @@ from math import sin, cos, pi
 from pyproj import Proj
 
 
+_projections = {}
+
+
 def get_sonar_data():
     """
     A simple function to read and manage the data contained in the text files.
@@ -87,27 +90,50 @@ def calculate_altitude_of_point(distance: Decimal, sample_angle: Decimal, sonar_
     return altitude_of_point
 
 
-def transform_coordinates(longitude: Decimal, latitude: Decimal):
+def get_zone(coordinates):
+    UTM_OFFSET = 1
+    UTM_ANGLE_DEGREES = 6
+
+    if 56 <= coordinates[1] < 64 and 3 <= coordinates[0] < 12:
+        return 32
+    if 72 <= coordinates[1] < 84 and 0 <= coordinates[0] < 42:
+        if coordinates[0] < 9:
+            return 31
+        elif coordinates[0] < 21:
+            return 33
+        elif coordinates[0] < 33:
+            return 35
+        return 37
+    return int((coordinates[0] + 180) / UTM_ANGLE_DEGREES) + UTM_OFFSET
+
+
+def get_letter(longitude):
+    return 'CDEFGHJKLMNPQRSTUVWXX'[int((longitude + 80) / 8)]
+
+
+def transform_coordinates(longitude, latitude):
     """
     Transforms the longitude and latitude angles into UTM coordinates using third party library.
     The constants are based on conventions, not likely to change in the future.
     The current coordinates are on the northern hemisphere, but in case of other locations in the future
     the code can calculate with the southern hemisphere's offset as well.
-    Future idea: should replace this function with a more efficient one, the converting takes a lot of time.
+    Future idea: should replace this function with a more convinient and more efficient one.
     """
-    RAD_DEGREE_CONVERT_RATE = Decimal(180 / pi)
-    UTM_OFFSET = 31
-    UTM_ANGLE_DEGREES = 6
     SOUTHERN_HEMISPHERE_OFFSET = 10000000
+    RAD_DEGREE_CONVERT_RATE = Decimal(180 / pi)
 
     longitude *= RAD_DEGREE_CONVERT_RATE
     latitude *= RAD_DEGREE_CONVERT_RATE
-    zone = int(divmod(longitude, UTM_ANGLE_DEGREES)[0]) + UTM_OFFSET
-    converter = Proj(proj='utm', zone=zone, ellps='WGS84')
-    utmx, utmy = converter(longitude, latitude)
-    if latitude < 0:
-        utmy= utmy + SOUTHERN_HEMISPHERE_OFFSET
-    return [utmx, utmy, zone]
+
+    zone_number = get_zone([longitude, latitude])
+    letter = get_letter(longitude)
+    if zone_number not in _projections:
+        _projections[zone_number] = Proj(proj='utm', zone=zone_number, ellps='WGS84')
+    utm_x, utm_y = _projections[zone_number](longitude, latitude)
+    if utm_y < 0:
+        utm_y += SOUTHERN_HEMISPHERE_OFFSET
+    zone = letter + str(zone_number)
+    return [utm_x, utm_y, zone]
 
 
 def calculate_coordinates(angle_index_pair, dataline, utm_base_coordinates):
