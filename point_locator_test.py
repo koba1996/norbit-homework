@@ -45,5 +45,50 @@ class PointLocatorTest(unittest.TestCase):
         self.assertRaises(ValueError, point_locator.calculate_distance, sample_index, speed_of_sound)
 
 
+    def test_4_calculate_altitude_sample_angle_zero(self):
+        sample_angle = 0
+        distance = 5
+        sonar_altitude = 0
+        expected_outcome = -5
+        actual_value = point_locator.calculate_altitude_of_point(distance, sample_angle, sonar_altitude)
+        self.assertEqual(expected_outcome, actual_value)
+
+
+    def test_5_calculate_altitude_sonar_altitude_decreased(self):
+        sample_angle = 0
+        distance = 5
+        sonar_altitude = 0
+        difference = 5
+        first_data = point_locator.calculate_altitude_of_point(distance, sample_angle, sonar_altitude)
+        sonar_altitude -= difference
+        expected_outcome = first_data - difference
+        actual_value = point_locator.calculate_altitude_of_point(distance, sample_angle, sonar_altitude)
+        self.assertEqual(expected_outcome, actual_value)
+
+
+    def test_6_transform_coordinates(self):
+        longitude = 1
+        latitude = 1
+        expected_outcome = 517825.18
+        actual_value = point_locator.transform_coordinates(longitude, latitude)[0]
+        self.assertAlmostEqual(expected_outcome, actual_value, 0)
+
+
+    def test_7_transform_coordinates(self):
+        longitude = 1
+        latitude = 1
+        expected_outcome = 6350350.27
+        actual_value = point_locator.transform_coordinates(longitude, latitude)[1]
+        self.assertAlmostEqual(expected_outcome, actual_value, 0)
+
+
+    def test_8_transform_coordinates_southern_hemisphere(self):
+        longitude = 1
+        latitude = -1
+        expected_outcome = 3649649.73
+        actual_value = point_locator.transform_coordinates(longitude, latitude)[1]
+        self.assertAlmostEqual(expected_outcome, actual_value, 0)
+
+
 if __name__ == '__main__':
     unittest.main()
