@@ -91,6 +91,9 @@ def calculate_altitude_of_point(distance: Decimal, sample_angle: Decimal, sonar_
 
 
 def get_zone(coordinates):
+    """
+    Calculates zone number for UTM projection.
+    """
     UTM_OFFSET = 1
     UTM_ANGLE_DEGREES = 6
 
@@ -108,6 +111,9 @@ def get_zone(coordinates):
 
 
 def get_letter(longitude):
+    """
+    Find the letter of the zone for the UTM projection.
+    """
     return 'CDEFGHJKLMNPQRSTUVWXX'[int((longitude + 80) / 8)]
 
 
