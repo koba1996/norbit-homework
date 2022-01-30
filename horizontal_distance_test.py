@@ -1,5 +1,5 @@
 import unittest
-import point_locator
+import main
 from decimal import Decimal
 from math import pi
 
@@ -26,8 +26,8 @@ class HorizontalDistanceTest(unittest.TestCase):
             "roll": Decimal(0)
         }
         second_data[attribute_to_change] += Decimal(change_by)
-        first_distance = point_locator.calculate_horizontal_distance(distance, angle, first_data)
-        second_distance = point_locator.calculate_horizontal_distance(distance, angle, second_data)
+        first_distance = main.calculate_horizontal_distance(distance, angle, first_data)
+        second_distance = main.calculate_horizontal_distance(distance, angle, second_data)
         return first_distance, second_distance
 
 
