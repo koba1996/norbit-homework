@@ -55,27 +55,27 @@ def calculate_distance(sample_index: Decimal, speed_of_sound: Decimal):
 
 def calculate_horizontal_distance(distance: Decimal, sample_angle: Decimal, dataline):
     """
-    Calculates the horizontal distance between the sonar and the located point using trigonatric formula
+    Calculates the horizontal distance between the sonar and the located point using trigonometric formula
     based on four angles (heading, pitch, roll, and the sample angle)
     and the distance.
     """
-    heading_angle = dataline["heading"]
-    pitching_angle = dataline["pitch"]
+    heading = dataline["horizontal_heading"]
+    pitch_head_diff = dataline["horizontal_pitch_head_diff"]
     rolling_angle = dataline["roll"]
-    horizontal_distance = distance * ((-1) * Decimal(sin(sample_angle + rolling_angle)) * Decimal(cos(heading_angle)) + Decimal(sin(pitching_angle)) * Decimal(sin(heading_angle)))
+    horizontal_distance = distance * ((-1) * Decimal(sin(sample_angle + rolling_angle)) * heading + pitch_head_diff)
     return horizontal_distance
 
 
 def calculate_vertical_distance(distance: Decimal, sample_angle: Decimal, dataline):
     """
-    Calculates the vertical distance between the sonar and the located point using trigonatric formula
+    Calculates the vertical distance between the sonar and the located point using trigonometric formula
     based on four angles (heading, pitch, roll, and the sample angle)
     and the distance.
     """
-    heading_angle = dataline["heading"]
-    pitching_angle = dataline["pitch"]
+    heading = dataline["vertical_heading"]
+    pitch_head_diff = dataline["vertical_pitch_head_diff"]
     rolling_angle = dataline["roll"]
-    vertical_distance = distance * (Decimal(sin(sample_angle + rolling_angle)) * Decimal(sin(heading_angle)) + Decimal(sin(pitching_angle)) * Decimal(cos(heading_angle)))
+    vertical_distance = distance * (Decimal(sin(sample_angle + rolling_angle)) * heading + pitch_head_diff)
     return vertical_distance
 
 
@@ -157,6 +157,15 @@ def calculate_coordinates(angle_index_pair, dataline, utm_base_coordinates):
     return utm_x, utm_y, altitude
 
 
+def store_trigonometric_values(dataline):
+    """Calculates and stores the trigonometric values for each dataline."""
+    heading_angle = dataline["heading"]
+    pitching_angle = dataline["pitch"]
+    dataline["vertical_pitch_head_diff"] = Decimal(sin(pitching_angle)) * Decimal(cos(heading_angle))
+    dataline["horizontal_pitch_head_diff"] = Decimal(sin(pitching_angle)) * Decimal(sin(heading_angle))
+    dataline["vertical_heading"] = Decimal(sin(heading_angle))
+    dataline["horizontal_heading"] = Decimal(cos(heading_angle))
+
 
 def locate_points(dataline):
     """
@@ -171,6 +180,7 @@ def locate_points(dataline):
     located_points = []
     angle_index_pairs = dataline["angle_index_pairs"]
     utm_base_coordinates = transform_coordinates(dataline["longitude"], dataline["latitude"])
+    store_trigonometric_values(dataline)
     for angle_index_pair in angle_index_pairs:
         utm_x, utm_y, altitude = calculate_coordinates(angle_index_pair, dataline, utm_base_coordinates)
         point = {
@@ -193,6 +203,7 @@ def get_located_points(data):
     Each dictionary contains a time field, and the array of points that were located in that time.
     Based on the usage of the points further arrangements are possible, 
     but this data storing model can be a decent base for many future applications of the data.
+    Future idea: write the data into a file.
     """
     print("Calculating coordinates, this might take around half a minute")
     all_located_points = []
