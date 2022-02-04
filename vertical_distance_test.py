@@ -26,6 +26,8 @@ class HorizontalDistanceTest(unittest.TestCase):
             "roll": Decimal(0)
         }
         second_data[attribute_to_change] += Decimal(change_by)
+        main.store_trigonometric_values(first_data)
+        main.store_trigonometric_values(second_data)
         first_distance = main.calculate_vertical_distance(distance, angle, first_data)
         second_distance = main.calculate_vertical_distance(distance, angle, second_data)
         return first_distance, second_distance
